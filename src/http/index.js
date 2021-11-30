@@ -9,6 +9,9 @@ export default function (config) {
   myaxios.interceptors.request.use(
     function (config) {
       // 在发送请求之前做些什么
+      if(sessionStorage.token){
+        config.headers.Authorization = sessionStorage.token
+      }
       return config;
     },
     function (error) {
