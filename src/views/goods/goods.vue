@@ -1,18 +1,22 @@
 <template>
   <div class="box">
+    <!-- 面包屑 -->
     <!-- <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>商品管理</el-breadcrumb-item>
       <el-breadcrumb-item>商品列表</el-breadcrumb-item>
     </el-breadcrumb> -->
+    <!-- 搜索 -->
     <div class="top">
       <div class="tosearch">
-        <input v-model="search" placeholder="请输入内容" class="search"/>
+        <input v-model="search" placeholder="请输入内容" class="search" />
         <el-button icon="el-icon-search" @click="tosearch"></el-button>
       </div>
-      <el-button type="primary" class="toadd" @click="toadd">添加商品</el-button>
+      <el-button type="primary" class="toadd" @click="toadd"
+        >添加商品</el-button
+      >
     </div>
-
+    <!-- 商品列表 -->
     <div class="list">
       <el-row>
         <el-col :span="1"><div class="grid-content bg-purple">#</div></el-col>
@@ -38,17 +42,20 @@
         >
         <el-col :span="13"
           ><div class="grid-content bg-purple-light">
-            {{ item.goods_name }}
+            <input type="text" v-model="item.goods_name" v-if="item.is_promote" class="update"/>
+            <span v-else> {{ item.goods_name }} </span>
           </div></el-col
         >
         <el-col :span="2"
           ><div class="grid-content bg-purple">
-            {{ item.goods_price }}
+            <input type="text" v-model="item.goods_price" v-if="item.is_promote" class="update"/>
+            <span v-else>{{ item.goods_price }}</span>
           </div></el-col
         >
         <el-col :span="2"
           ><div class="grid-content bg-purple-light">
-            {{ item.goods_weight }}
+            <input type="text" v-model="item.goods_weight" v-if="item.is_promote" class="update"/>
+            <span v-else>{{ item.goods_weight }}</span>
           </div></el-col
         >
         <el-col :span="3"
@@ -71,6 +78,7 @@
         ></el-col>
       </el-row>
     </div>
+    <!-- 分页器 -->
     <div class="block">
       <el-pagination
         background
@@ -81,7 +89,7 @@
         :page-size="pagesize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
-        :hide-on-single-page='true'
+        :hide-on-single-page="true"
       >
       </el-pagination>
     </div>
@@ -111,7 +119,7 @@ export default {
           pagesize: this.pagesize,
         },
       }).then((res) => {
-        console.log(res);
+        // console.log(res);
         this.list = res.data.goods;
         this.total = res.data.total;
       });
@@ -127,7 +135,26 @@ export default {
     },
     // 修改，删除
     toupda(item) {
+      item.is_promote = !item.is_promote;
       console.log(item);
+      if(!item.is_promote){
+        http({
+          url:`goods/${item.goods_id}`,
+          method:'put',
+          data:{
+            goods_name:item.goods_name,
+            goods_price:item.goods_price,
+            goods_weight:item.goods_weight,
+            goods_number:item.goods_number,
+            goods_introduce:item.goods_introduce,
+            pics:item.pics,
+            attrs:item.attrs,
+          }
+        }).then(res=>{
+          console.log(res)
+          this.gainlist()
+        })
+      }
     },
     todel(item) {
       // console.log(item)
@@ -145,6 +172,7 @@ export default {
               type: "success",
               message: "删除成功!",
             });
+            this.gainlist()
           });
         })
         .catch(() => {
@@ -155,20 +183,20 @@ export default {
         });
     },
     // 搜索
-    tosearch(){
+    tosearch() {
       http({
-        url:`goods/${this.search}`
-      }).then(res=>{
-        console.log(res)
+        url: `goods/${this.search}`,
+      }).then((res) => {
+        // console.log(res)
         // this.pagenum = 1
-        this.total = 1
-        this.list = [res.data]
-      })
+        this.total = 1;
+        this.list = [res.data];
+      });
     },
     // 添加商品
-    toadd(){
-      this.$router.push('/home/addgoods')
-    }
+    toadd() {
+      this.$router.push("/home/addgoods");
+    },
   },
   components: {},
   mounted() {
@@ -278,5 +306,12 @@ export default {
 .row-bg {
   padding: 10px 0;
   background-color: #f9fafc;
+}
+.update{
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  background-color: #F5F7FA;
 }
 </style>

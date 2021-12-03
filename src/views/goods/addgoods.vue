@@ -26,28 +26,6 @@
       <el-step title="完成"></el-step>
     </el-steps>
 
-    <!-- <el-tabs tab-position="left" style="height: 440px" class="thetabs">
-      
-      <el-tab-pane label="商品图片">
-        <el-upload
-          class="upload-demo"
-          action="http://127.0.0.1:8888/api/private/v1/"
-          :headers="headers"
-          :on-preview="handlePreview"
-          :on-remove="handleRemove"
-          :on-error="toerr"
-          :file-list="fileList"
-          list-type="picture"
-        >
-          <el-button size="small" type="primary">点击上传</el-button>
-          <div slot="tip" class="el-upload__tip">
-            只能上传jpg/png文件，且不超过500kb
-          </div>
-        </el-upload>
-      </el-tab-pane>
-      <el-tab-pane label="商品内容">商品内容</el-tab-pane>
-    </el-tabs> -->
-
     <!-- 标签页 -->
     <el-tabs
       tab-position="left"
@@ -125,13 +103,19 @@
           action="http://192.168.1.61:8888/api/private/v1/upload"
           :headers="uploadHeaders"
           list-type="picture"
+          :on-success="handlesuccess"
           :on-remove="handleRemove"
         >
           <el-button size="small" type="primary">点击上传</el-button>
         </el-upload>
       </el-tab-pane>
 
-      <el-tab-pane label="商品内容" name="4"><!-- 商品描述面板 --></el-tab-pane>
+      <el-tab-pane label="商品内容" name="4">
+        <quill-editor @change="introduceChange">
+
+        </quill-editor>
+        <el-button type="primary" @click="addgoods">添加商品</el-button>
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -151,6 +135,8 @@ export default {
         goods_weight: "",
         goods_number: "",
         goods_cat: "",
+        // goods_intro:'',
+        pics:[],
       },
       addFormRules: {
         goods_name: [
@@ -178,7 +164,7 @@ export default {
       parameterValue: [],
       property: [],
       previewImgSrc: "",
-      
+      intro:''
     };
   },
   methods: {
@@ -192,6 +178,9 @@ export default {
       // 根据索引删除对应的图片信息对象
       fileList.splice(index, 1);
       // console.log(fileList)
+    },
+    handlesuccess(res){
+      this.addForm.pics.push({ pic: res.data.tmp_path})
     },
 
     // 标签页改变
@@ -211,27 +200,62 @@ export default {
     },
     handleCascaderChange() {
       const numid = [...this.addForm.goods_cat].pop();
-      // 商品参数
+      // 商品参数  动态
       http({
         url: `categories/${numid}/attributes`,
         params: {
           sel: "many",
         },
       }).then((res) => {
-        // console.log(res);
+        console.log(res);
         this.parameter = res.data;
       });
-      // 商品属性
+      // 商品属性  静态
       http({
         url: `categories/${numid}/attributes`,
         params: {
           sel: "only",
         },
       }).then((res) => {
-        // console.log(res);
+        console.log(res);
         this.property = res.data;
       });
     },
+    // 富文本
+    introduceChange(v){
+      // console.log(v.html)
+      this.intro = v.html
+    },
+    // 商品添加
+    addgoods(){
+      // console.log(this.addForm,//基本信息
+      // this.parameterValue,//商品参数
+      // this.property,//商品属性
+      // this.addForm.pics,//图片
+      // this.intro) //介绍
+      let goods_cat = [...this.addForm.goods_cat].join()
+      let v1 = [...this.parameterValue]
+      let attrs = [];
+      for (const iterator of v1) {
+        attrs.push({attr_value:iterator})
+      }
+      console.log(this.property)
+      // console.log('静态',[{attr_value:...this.parameterValue}])
+      http({
+        url:'goods',
+        method:'post',
+        data:{
+          goods_name:this.addForm.goods_name,
+          goods_cat,
+          goods_price:this.addForm.goods_price,
+          goods_number:this.addForm.goods_number,
+          goods_weight:this.addForm.goods_weight,
+          goods_introduce:this.intro,
+          pics:this.addForm.pics,
+          attrs
+        }
+      }).then(res=>console.log(res))
+    }
   },
   components: {},
   mounted() {
@@ -271,6 +295,9 @@ export default {
     }
     ::v-deep .el-form-item {
       margin-bottom: 18px;
+    }
+    ::v-deep .ql-container {
+      height: 200px;
     }
   }
 }

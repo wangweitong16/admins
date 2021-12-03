@@ -18,7 +18,7 @@
               text-color="#fff"
               active-text-color="#ffd04b"
             >
-            <!-- <el-submenu index="item.id" v-for="item in list" :key="item.id">
+              <!-- <el-submenu index="item.id" v-for="item in list" :key="item.id">
               <template slot="title">
                   <i class="el-icon-user-solid"></i>
                   <span slot="title">{{item.authName}}</span>
@@ -29,7 +29,7 @@
                   >
                 </el-menu-item-group>
             </el-submenu> -->
-
+              <!-- 用户管理 -->
               <el-submenu index="1">
                 <template slot="title">
                   <i class="el-icon-user-solid"></i>
@@ -41,6 +41,7 @@
                   >
                 </el-menu-item-group>
               </el-submenu>
+              <!-- 权限管理 -->
               <el-submenu index="2">
                 <template slot="title">
                   <i class="el-icon-receiving"></i>
@@ -55,6 +56,7 @@
                   >
                 </el-menu-item-group>
               </el-submenu>
+              <!-- 商品管理 -->
               <el-submenu index="3">
                 <template slot="title">
                   <i class="el-icon-s-goods"></i>
@@ -64,14 +66,15 @@
                   <el-menu-item index="/home/goods"
                     ><i class="el-icon-menu"></i> 商品列表</el-menu-item
                   >
-                  <el-menu-item index="1-2"
+                  <el-menu-item index="/home/params"
                     ><i class="el-icon-menu"></i> 分类参数</el-menu-item
                   >
-                  <el-menu-item index="1-3"
+                  <el-menu-item index="/home/categories"
                     ><i class="el-icon-menu"></i> 商品分类</el-menu-item
                   >
                 </el-menu-item-group>
               </el-submenu>
+              <!-- 订单管理 -->
               <el-submenu index="4">
                 <template slot="title">
                   <i class="el-icon-s-order"></i>
@@ -83,6 +86,7 @@
                   >
                 </el-menu-item-group>
               </el-submenu>
+              <!-- 数据统计 -->
               <el-submenu index="5">
                 <template slot="title">
                   <i class="el-icon-s-marketing"></i>
