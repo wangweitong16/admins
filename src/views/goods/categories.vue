@@ -33,6 +33,7 @@
     </el-dialog>
     <!-- 表格 -->
     <el-table
+      v-loading="loading"
       :data="tableData"
       style="width: 100%; margin-bottom: 20px"
       row-key="cat_id"
@@ -124,6 +125,7 @@ export default {
   props: {},
   data() {
     return {
+      loading: "false",
       // 添加表单
       form: {
         name: "",
@@ -158,6 +160,7 @@ export default {
   methods: {
     //   获取列表
     gainlist() {
+      this.loading = true;
       http({
         url: "categories",
         params: {
@@ -168,6 +171,7 @@ export default {
         // console.log(res);
         this.tableData = res.data.result;
         this.total = res.data.total;
+        this.loading = false;
       });
     },
     // 添加分类
@@ -330,5 +334,23 @@ export default {
   .el-icon-success {
     color: #90ee90;
   }
+  // 树形数据
+  // .el-table_1_column_2 {
+  //   ::v-deep i {
+
+  //     &::before {
+  //       font-size: 20px;
+  //       content: "+";
+  //       border: 1px solid #000;
+  //     }
+  //   }
+  //   .el-table__expand-icon--expanded {
+  //     i {
+  //       ::v-deep &::before {
+  //         content: "-";
+  //       }
+  //     }
+  //   }
+  // }
 }
 </style>

@@ -42,19 +42,34 @@
         >
         <el-col :span="13"
           ><div class="grid-content bg-purple-light">
-            <input type="text" v-model="item.goods_name" v-if="item.is_promote" class="update"/>
+            <input
+              type="text"
+              v-model="item.goods_name"
+              v-if="item.is_promote"
+              class="update"
+            />
             <span v-else> {{ item.goods_name }} </span>
           </div></el-col
         >
         <el-col :span="2"
           ><div class="grid-content bg-purple">
-            <input type="text" v-model="item.goods_price" v-if="item.is_promote" class="update"/>
+            <input
+              type="text"
+              v-model="item.goods_price"
+              v-if="item.is_promote"
+              class="update"
+            />
             <span v-else>{{ item.goods_price }}</span>
           </div></el-col
         >
         <el-col :span="2"
           ><div class="grid-content bg-purple-light">
-            <input type="text" v-model="item.goods_weight" v-if="item.is_promote" class="update"/>
+            <input
+              type="text"
+              v-model="item.goods_weight"
+              v-if="item.is_promote"
+              class="update"
+            />
             <span v-else>{{ item.goods_weight }}</span>
           </div></el-col
         >
@@ -135,25 +150,79 @@ export default {
     },
     // 修改，删除
     toupda(item) {
-      item.is_promote = !item.is_promote;
-      console.log(item);
-      if(!item.is_promote){
-        http({
-          url:`goods/${item.goods_id}`,
-          method:'put',
-          data:{
-            goods_name:item.goods_name,
-            goods_price:item.goods_price,
-            goods_weight:item.goods_weight,
-            goods_number:item.goods_number,
-            goods_introduce:item.goods_introduce,
-            pics:item.pics,
-            attrs:item.attrs,
-          }
-        }).then(res=>{
-          console.log(res)
-          this.gainlist()
+      if (!item.is_promote) {
+        this.$confirm("修改商品信息, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
         })
+          .then(() => {
+            // 获取商品分类
+            http({
+              url: `goods/${item.goods_id}`,
+            }).then((res) => {
+              // console.log(res);
+              item.goods_cat = res.data.goods_cat
+              item.is_promote = !item.is_promote;
+              this.$message({
+                type: "warning",
+                message: "请在原文上修改!",
+              });
+            });
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消删除",
+            });
+          });
+      } else {
+        this.$confirm("确定修改商品信息, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        })
+          .then(() => {
+            item.is_promote = !item.is_promote;
+            console.log({...item});
+            if (!item.is_promote) {
+              http({
+                url: `goods/${item.goods_id}`,
+                method: "put",
+                data: {...item}
+                // {
+                //   goods_name: item.goods_name,
+                //   goods_price: item.goods_price,
+                //   goods_weight: item.goods_weight,
+                //   goods_number: item.goods_number,
+                //   goods_introduce: item.goods_introduce,
+                //   pics: item.pics,
+                //   attrs: item.attrs,
+                // }
+                ,
+              }).then((res) => {
+                console.log(res);
+                if (res.meta.status == 200) {
+                  this.$message({
+                    type: "success",
+                    message: res.meta.msg,
+                  });
+                  this.gainlist();
+                } else {
+                  this.$message({
+                    type: "error",
+                    message: res.meta.msg,
+                  });
+                }
+              });
+            }
+          })
+          .catch(() => {
+            this.$message({
+              type: "info",
+              message: "已取消删除",
+            });
+          });
       }
     },
     todel(item) {
@@ -172,7 +241,7 @@ export default {
               type: "success",
               message: "删除成功!",
             });
-            this.gainlist()
+            this.gainlist();
           });
         })
         .catch(() => {
@@ -307,11 +376,11 @@ export default {
   padding: 10px 0;
   background-color: #f9fafc;
 }
-.update{
+.update {
   width: 100%;
   height: 100%;
   border: none;
   outline: none;
-  background-color: #F5F7FA;
+  background-color: #f5f7fa;
 }
 </style>

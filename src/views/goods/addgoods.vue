@@ -114,7 +114,7 @@
         <quill-editor @change="introduceChange">
 
         </quill-editor>
-        <el-button type="primary" @click="addgoods">添加商品</el-button>
+        <el-button type="primary" @click="addgoods" class="submit">添加商品</el-button>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -254,7 +254,20 @@ export default {
           pics:this.addForm.pics,
           attrs
         }
-      }).then(res=>console.log(res))
+      }).then(res=>{
+        console.log(res)
+        if(res.meta.status==201){
+          this.$message.success(res.meta.msg)
+          this.activeName = '6'
+          this.$message({
+            type:'success',
+            message:res.meta.msg,
+          })
+          this.$router.push('/home/goods')
+        }else{
+          this.$message.error(res.meta.msg)
+        }
+      })
     }
   },
   components: {},
@@ -299,6 +312,9 @@ export default {
     ::v-deep .ql-container {
       height: 200px;
     }
+  }
+  .submit{
+    margin-top: 15px;
   }
 }
 </style>
